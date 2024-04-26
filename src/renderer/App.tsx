@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { Autocomplete, Checkbox, TextField, Button } from '@mui/material';
 
+// Structure of the data item to be pushed to the database
 interface DataItem {
   Dataset: string;
   ObservationID: number;
@@ -14,10 +15,12 @@ function App() {
   const [data, setData] = useState<{ result: DataItem[] }>({ result: [] });
   const [options, setOptions] = useState<{ value: string; label: string; }[]>([]);
 
+  // Fetch data from the APIs
   useEffect(() => {
     fetch('http://localhost:5010/obs/statusUnknown')
       .then(response => response.json())
       .then(data => {
+        console.log(data);
         const updatedData = data.result.map((item: DataItem) => ({
           ...item,
           processingCode: null,
@@ -32,6 +35,7 @@ function App() {
     fetch('http://localhost:5010/obs/statusUnknown')
       .then(response => response.json())
       .then(data => {
+        console.log(data);
         const updatedData = data.result.map((item: DataItem) => ({
           ...item,
           processingCode: null,
@@ -46,6 +50,7 @@ function App() {
     fetch('http://localhost:5010/obs/codes')
       .then(response => response.json())
       .then(data => {
+        console.log(data);
         const formattedOptions = data.map((item: { id: number; code: string; description: string; }) => ({
           value: item.code,
           label: item.description
@@ -86,29 +91,46 @@ function App() {
   };
 
   // const handleSubmit = () => {
-  //   const update = data.result.map((item: DataItem) => ({
+  //   // Filter results to only include those with a processingCode before submitting
+  //   const updates = data.result.filter(item => item.processingCode).map(item => ({
   //     obs_id: item.ObservationID,
-  //     processing_code: item.processingCode ? item.processingCode.join(',') : null,
+  //     processing_code: item.processingCode,
   //     submission_code: item.submissionChecked ? 'submitted' : 'not_submitted',
   //     comment: item.comment
   //   }));
 
+  //   console.log(JSON.stringify({ updates }));  // Log or send to your API
+
+  //   // If you're ready to integrate with the API:
   //   fetch('http://localhost:5010/obs/update', {
   //     method: 'POST',
   //     headers: {
   //       'Content-Type': 'application/json',
   //     },
-  //     body: JSON.stringify({ update }),
+  //     body: JSON.stringify({ updates }),
   //   })
-  //     .then(response => response.json())
-  //     .then(responseData => {
-  //       console.log('Submit response:', responseData);
-  //     })
-  //     .catch(error => {
-  //       console.error('Error submitting data:', error);
-  //     });
+  //   .then(response => response.json())
+  //   .then(responseData => {
+  //     console.log('Submit response:', responseData);
+  //     // Refresh observations upon successful submission by fetching them again
+  //     fetch('http://localhost:5010/obs/statusUnknown')
+  //       .then(response => response.json())
+  //       .then(data => {
+  //         console.log(data);
+  //         const updatedData = data.result.map((item: DataItem) => ({
+  //           ...item,
+  //           processingCode: null,
+  //           submissionChecked: false,
+  //           comment: ''
+  //         }));
+  //         setData({ result: updatedData });
+  //       })
+  //       .catch(error => console.error('Error refetching data:', error));
+  //   })
+  //   .catch(error => {
+  //     console.error('Error submitting data:', error);
+  //   });
   // };
-  // this one is for testing the handleSubmit function
 
   return (
     <div className="App">
